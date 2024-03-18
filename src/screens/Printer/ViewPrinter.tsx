@@ -1,14 +1,21 @@
 import { RouteProp } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { usePrinterInfos } from "../../hooks/usePrinterInfos";
-import { Printer } from "../../types/firebaseModels";
-import PrinterAccessories from "./PrinterAccessories";
+import { StyleSheet, Text, View } from "react-native";
 
-const PrinterInfos = ({ route }: { route: RouteProp<{ params: { serialNumber: string } }> }) => {
+// types
+import { Printer as PrinterInterface } from "../../types/firebaseModels";
+
+// hooks
+import { usePrinterInfos } from "../../hooks/usePrinterInfos";
+
+// components
+import PrinterAccessories from "./PrinterAccessories";
+import PrinterInfos from "./PrinterInfos";
+
+const ViewPrinter = ({ route }: { route: RouteProp<{ params: { serialNumber: string } }> }) => {
   const [isPending, setIsPending] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [printer, setPrinter] = useState<Printer | null>(null);
+  const [printer, setPrinter] = useState<PrinterInterface | null>(null);
 
   const { queryPrinterBySN } = usePrinterInfos();
 
@@ -52,20 +59,10 @@ const PrinterInfos = ({ route }: { route: RouteProp<{ params: { serialNumber: st
 
   return (
     <View style={styles.container}>
-      <View style={styles.imgContainer}>
-        <Image
-          style={styles.img}
-          source={require("../../assets/printer.png")}
-          alt="Imagem impressora"
-        />
+      <PrinterInfos printer={printer} />
+      <View style={styles.accessories}>
+        <PrinterAccessories printerId={printer.id} />
       </View>
-      <Text style={styles.model}>{printer.model}</Text>
-      <Text style={styles.serialNumber}>{printer.serialNumber}</Text>
-      {printer && (
-        <View style={styles.accessories}>
-          <PrinterAccessories printerId={printer.id} />
-        </View>
-      )}
     </View>
   );
 };
@@ -77,33 +74,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
   },
-  imgContainer: {
-    height: 100,
-    width: 100,
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 50,
-    marginBottom: 10,
-    padding: 10,
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  img: {
-    objectFit: "cover",
-    maxHeight: "100%",
-    maxWidth: "100%",
-  },
-  model: {
-    fontWeight: "bold",
-    fontSize: 20,
-  },
-  serialNumber: {
-    color: "grey",
-  },
   accessories: {
     flex: 1,
     marginTop: 20,
   },
 });
 
-export default PrinterInfos;
+export default ViewPrinter;
