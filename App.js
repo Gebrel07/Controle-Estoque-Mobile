@@ -1,9 +1,11 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
+
+// components
 import Home from "./src/screens/Home";
-import ViewPrinter from "./src/screens/Printer/ViewPrinter";
 import Scan from "./src/screens/Scan";
+import ViewPrinter from "./src/screens/ViewPrinter";
 
 const Stack = createStackNavigator();
 
@@ -14,7 +16,7 @@ const App = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Scan" component={Scan} options={{ title: "Escaneie um QR Code" }} />
         <Stack.Screen
-          name="PrinterInfos"
+          name="ViewPrinter"
           component={ViewPrinter}
           options={{ title: "Informações da impressora" }}
         />

@@ -1,6 +1,8 @@
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
+
+// components
 import QrScanner from "../components/QrScanner";
 
 const Scan = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -19,7 +21,7 @@ const Scan = ({ navigation }: { navigation: NavigationProp<any> }) => {
   );
 
   const onBarCodeScanned = (serialNumber: string) => {
-    navigation.navigate("PrinterInfos", { serialNumber });
+    navigation.navigate("ViewPrinter", { serialNumber });
   };
 
   const onPermissionDenied = () => {
