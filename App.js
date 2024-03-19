@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 
 // components
+import CheckPrinter from "./src/screens/CheckPrinter";
 import Home from "./src/screens/Home";
 import Scan from "./src/screens/Scan";
 import ViewPrinter from "./src/screens/ViewPrinter";
@@ -19,6 +20,11 @@ const App = () => {
           name="ViewPrinter"
           component={ViewPrinter}
           options={{ title: "Informações da impressora" }}
+        />
+        <Stack.Screen
+          name="CheckPrinter"
+          component={CheckPrinter}
+          options={{ title: "conferir impressora" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
