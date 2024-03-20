@@ -29,6 +29,9 @@ export interface PrinterCheck {
   printerId: string;
   note: string | null;
   date: Timestamp;
+  // NOTE: default must be false. Mark as completed after all
+  // PrinterCheckAccessories have been inserted in database
+  completed: boolean;
 }
 
 export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {}

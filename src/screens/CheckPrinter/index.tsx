@@ -29,7 +29,29 @@ const CheckPrinter = ({
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [note, setNote] = useState<string | null>(null);
 
-  const { addPrinterCheck, addCheckAccessory } = usePrinterChecks();
+  const { addPrinterCheck, addCheckAccessory, completePrinterCheck } = usePrinterChecks();
+
+  const finishPrinterCheck = (checkId: string) => {
+    completePrinterCheck(checkId)
+      .then(() => {
+        Toast.show({
+          type: "success",
+          text1: "Conferência realizada com sucesso!",
+          position: "bottom",
+          visibilityTime: 5000,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        Toast.show({
+          type: "error",
+          text1: "Erro ao completar conferência",
+          position: "bottom",
+          visibilityTime: 5000,
+        });
+      })
+      .finally(() => navigation.goBack());
+  };
 
   const handleError = (err: any) => {
     console.error(err);
@@ -55,29 +77,13 @@ const CheckPrinter = ({
         // create new PrinterCheckAccessory for each accessory
         for (const accessoryId of Object.keys(checks)) {
           addCheckAccessory(accessoryId, checks[accessoryId], printerCheckId)
-            .then((res) => {
-              if (!res) {
-                // TODO: handle cases where PrinterCheck is imcomplete because of
-                // errors during this loop
-                throw new Error(
-                  "Erro ao adicionar PrinterCheckAccessory: " +
-                    JSON.stringify({ printerCheckId, accessoryId })
-                );
-              }
-            })
+            .then()
             .catch((err) => handleError(err));
         }
+        // mark printerCheck as completed
+        finishPrinterCheck(printerCheckId);
       })
-      .catch((err) => handleError(err))
-      .finally(() => {
-        Toast.show({
-          type: "success",
-          text1: "Conferência enviada com sucesso!",
-          position: "bottom",
-          visibilityTime: 5000,
-        });
-        navigation.goBack();
-      });
+      .catch((err) => handleError(err));
   };
 
   const handleTextChange = (text: string) => {

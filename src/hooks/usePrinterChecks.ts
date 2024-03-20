@@ -1,4 +1,14 @@
-import { Timestamp, addDoc, collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
 import {
   PrinterCheck,
@@ -28,6 +38,7 @@ export const usePrinterChecks = () => {
         printerId: doc.get("printerId"),
         note: doc.get("note"),
         date: doc.get("date"),
+        completed: doc.get("completed"),
       });
     });
 
@@ -66,6 +77,7 @@ export const usePrinterChecks = () => {
       printerId,
       note,
       date: Timestamp.fromDate(new Date()),
+      completed: false,
     };
 
     // add document to firebase
@@ -92,10 +104,17 @@ export const usePrinterChecks = () => {
     return docRef.id;
   };
 
+  const completePrinterCheck = async (checkId: string) => {
+    const docRef = doc(projFirestore, "printerChecks", checkId);
+    // update field
+    await updateDoc(docRef, { completed: true });
+  };
+
   return {
     queryChecksByPrinterId,
     queryCheckAccessoriesByCheckId,
     addPrinterCheck,
     addCheckAccessory,
+    completePrinterCheck,
   };
 };
