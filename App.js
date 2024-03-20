@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 
 // components
+import Toast from "react-native-toast-message";
 import CheckPrinter from "./src/screens/CheckPrinter";
 import Home from "./src/screens/Home";
 import Scan from "./src/screens/Scan";
@@ -24,9 +25,10 @@ const App = () => {
         <Stack.Screen
           name="CheckPrinter"
           component={CheckPrinter}
-          options={{ title: "conferir impressora" }}
+          options={{ title: "Conferir impressora" }}
         />
       </Stack.Navigator>
+      <Toast />
     </NavigationContainer>
   );
 };

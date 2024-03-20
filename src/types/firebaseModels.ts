@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Printer {
   id: string;
   imgUrl: string | null;
@@ -21,3 +23,21 @@ export interface Accessory {
 export interface AccessoryForCheck extends Accessory {
   hasAccessory: boolean;
 }
+
+export interface PrinterCheck {
+  id: string;
+  printerId: string;
+  note: string | null;
+  date: Timestamp;
+}
+
+export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {}
+
+export interface PrinterCheckAccessory {
+  id: string;
+  accessoryId: string;
+  hasAccessory: boolean;
+  printerCheckId: string;
+}
+
+export interface PrinterCheckAccessoryDto extends Omit<PrinterCheckAccessory, "id"> {}
