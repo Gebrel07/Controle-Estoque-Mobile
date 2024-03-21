@@ -4,6 +4,7 @@ import {
   collection,
   doc,
   getDocs,
+  limit,
   orderBy,
   query,
   updateDoc,
@@ -41,6 +42,34 @@ export const usePrinterChecks = () => {
         completed: doc.get("completed"),
       });
     });
+
+    return res;
+  };
+
+  const queryLastPrinterCheck = async (printerId: string): Promise<PrinterCheck | null> => {
+    const q = query(
+      collection(projFirestore, "printerChecks"),
+      where("printerId", "==", printerId),
+      orderBy("date", "desc"),
+      limit(1)
+    );
+    const querySnapshot = await getDocs(q);
+
+    // if no result return null
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    // ge first document in query
+    const firstDoc = querySnapshot.docs[0];
+
+    const res = {
+      id: firstDoc.id,
+      printerId: firstDoc.get("printerId"),
+      note: firstDoc.get("note"),
+      date: firstDoc.get("date"),
+      completed: firstDoc.get("completed"),
+    };
 
     return res;
   };
@@ -113,6 +142,7 @@ export const usePrinterChecks = () => {
   return {
     queryChecksByPrinterId,
     queryCheckAccessoriesByCheckId,
+    queryLastPrinterCheck,
     addPrinterCheck,
     addCheckAccessory,
     completePrinterCheck,
