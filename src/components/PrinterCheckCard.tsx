@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { PrinterCheck } from "../types/firebaseModels";
+
+// components
+import AccessoryChecklist from "./AccessoryChecklist";
+
+// types
+import { CheckedAccessory } from "../types/accessoryTypes";
+import { PrinterCheck } from "../types/printerTypes";
 
 const PrinterCheckCard = ({
   printerCheck,
+  accessories,
   title = null,
 }: {
   printerCheck: PrinterCheck;
+  accessories: CheckedAccessory[] | null;
   title: string | null;
 }) => {
   const dateString = printerCheck.date.toDate().toLocaleDateString("pt-BR", {
@@ -33,7 +41,12 @@ const PrinterCheckCard = ({
         </TouchableOpacity>
       </View>
 
-      {expand && <>{printerCheck.note && <Text>Observação: {printerCheck.note}</Text>}</>}
+      {expand && (
+        <>
+          {printerCheck.note && <Text>Observação: {printerCheck.note}</Text>}
+          {accessories && <AccessoryChecklist checkedAccessories={accessories} />}
+        </>
+      )}
     </View>
   );
 };
