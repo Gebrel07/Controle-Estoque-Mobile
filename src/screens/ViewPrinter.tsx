@@ -1,10 +1,14 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import PrinterCheckCard from "../components/PrinterCheckCard";
+
+// hooks
+import { usePrinterChecks } from "../hooks/usePrinterChecks";
 
 // types
-import { Printer as PrinterInterface } from "../types/firebaseModels";
+import { PrinterCheck, Printer as PrinterInterface } from "../types/firebaseModels";
 
 // components
 import PrinterCard from "../components/PrinterCard";
@@ -21,6 +25,20 @@ const ViewPrinter = ({
   const [printer, setPrinter] = useState<PrinterInterface | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [lastCheck, setLastCheck] = useState<PrinterCheck | null>(null);
+
+  const { queryLastPrinterCheck } = usePrinterChecks();
+
+  useEffect(() => {
+    if (printer) {
+      queryLastPrinterCheck(printer.id)
+        .then((printerCheck) => {
+          setLastCheck(printerCheck);
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [printer]);
+
   if (error) {
     return (
       <View style={styles.container}>
@@ -36,14 +54,18 @@ const ViewPrinter = ({
         onQueryDone={(printer) => setPrinter(printer)}
         onError={() => setError("Erro ao carregar impressora")}
       />
+
       {printer && (
-        <View style={styles.buttons}>
-          <Button
-            title="Realizar conferência"
-            onPress={() => navigation.navigate("CheckPrinter", { serialNumber })}
-          />
-          <Button title="Histórico de conferências" />
-        </View>
+        <>
+          {lastCheck && <PrinterCheckCard printerCheck={lastCheck} title="Última conferência" />}
+          <View style={styles.buttons}>
+            <Button
+              title="Realizar conferência"
+              onPress={() => navigation.navigate("CheckPrinter", { serialNumber })}
+            />
+            <Button title="Histórico de conferências" />
+          </View>
+        </>
       )}
     </ScrollView>
   );
