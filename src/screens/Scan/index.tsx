@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 // components
-import QrScanner from "../components/QrScanner";
+import QrScanner from "./QrScanner";
 
 const Scan = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [mountCamera, setMountCamera] = useState<boolean>(false);
