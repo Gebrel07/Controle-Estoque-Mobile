@@ -4,16 +4,16 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 // hooks
-import { useCheckAccessories } from "../hooks/useCheckAccessories";
-import { usePrinterChecks } from "../hooks/usePrinterChecks";
+import { useCheckAccessories } from "../../hooks/useCheckAccessories";
+import { usePrinterChecks } from "../../hooks/usePrinterChecks";
 
 // types
-import { CheckedAccessory } from "../types/accessoryTypes";
-import { Printer, PrinterCheck } from "../types/printerTypes";
+import { CheckedAccessory } from "../../types/accessoryTypes";
+import { Printer, PrinterCheck } from "../../types/printerTypes";
 
 // components
-import PrinterCard from "../components/PrinterCard";
-import PrinterCheckCard from "../components/PrinterCheckCard";
+import PrinterCard from "../../components/PrinterCard";
+import LastCheckCard from "./LastCheckCard";
 
 const ViewPrinter = ({
   route,
@@ -73,10 +73,9 @@ const ViewPrinter = ({
       {printer && (
         <>
           {lastCheck && (
-            <PrinterCheckCard
+            <LastCheckCard
               printerCheck={lastCheck}
               accessories={checkAccessories}
-              title="Última conferência"
             />
           )}
           <View style={styles.buttons}>

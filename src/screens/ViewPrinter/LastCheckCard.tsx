@@ -2,21 +2,16 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-// components
-import AccessoryChecklist from "./AccessoryChecklist";
-
 // types
-import { CheckedAccessory } from "../types/accessoryTypes";
-import { PrinterCheck } from "../types/printerTypes";
+import { CheckedAccessory } from "../../types/accessoryTypes";
+import { PrinterCheck } from "../../types/printerTypes";
 
-const PrinterCheckCard = ({
+const LastCheckCard = ({
   printerCheck,
   accessories,
-  title = null,
 }: {
   printerCheck: PrinterCheck;
   accessories: CheckedAccessory[] | null;
-  title: string | null;
 }) => {
   const dateString = printerCheck.date.toDate().toLocaleDateString("pt-BR", {
     day: "2-digit",
@@ -31,7 +26,7 @@ const PrinterCheckCard = ({
 
   return (
     <View style={styles.container}>
-      {title && <Text style={styles.title}>{title}</Text>}
+      {<Text style={styles.title}>Última conferência</Text>}
 
       <View style={styles.header}>
         <Text style={styles.date}>{dateString}</Text>
@@ -47,14 +42,29 @@ const PrinterCheckCard = ({
       {expand && (
         <>
           {printerCheck.note && <Text>Observação: {printerCheck.note}</Text>}
-          {accessories && <AccessoryChecklist checkedAccessories={accessories} />}
+
+          {accessories && (
+            <View>
+              <Text style={styles.subtitle}>Acessórios</Text>
+              {accessories.map((accessory) => (
+                <View style={styles.row} key={accessory.id}>
+                  <View style={styles.accessoryName}>
+                    <Text>{accessory.type}</Text>
+                  </View>
+                  <View>
+                    <Text>{accessory.hasAccessory ? "OK" : "Falta"}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
         </>
       )}
     </View>
   );
 };
 
-export default PrinterCheckCard;
+export default LastCheckCard;
 
 const styles = StyleSheet.create({
   container: {
@@ -86,5 +96,20 @@ const styles = StyleSheet.create({
   },
   collapseText: {
     fontWeight: "bold",
+  },
+  subtitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderColor: "lightgray",
+    borderBottomWidth: 1,
+    padding: 10,
+  },
+  accessoryName: {
+    maxWidth: "70%",
   },
 });
