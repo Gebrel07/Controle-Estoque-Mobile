@@ -14,12 +14,17 @@ import { projFirestore } from "../firebase/config";
 import { PrinterCheck, PrinterCheckDto } from "../types/firebaseModels";
 
 export const usePrinterChecks = () => {
-  const queryChecksByPrinterId = async (printerId: string): Promise<PrinterCheck[] | null> => {
-    const q = query(
-      collection(projFirestore, "printerChecks"),
-      where("printerId", "==", printerId),
-      orderBy("date", "desc")
-    );
+  const queryChecksByPrinterId = async (
+    printerId: string,
+    completed?: boolean
+  ): Promise<PrinterCheck[] | null> => {
+    const filters = [where("printerId", "==", printerId)];
+
+    if (typeof completed !== "undefined") {
+      filters.push(where("completed", "==", completed));
+    }
+
+    const q = query(collection(projFirestore, "printerChecks"), ...filters, orderBy("date", "desc"));
     const querySnapshot = await getDocs(q);
 
     // if no result return null

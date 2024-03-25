@@ -72,18 +72,17 @@ const ViewPrinter = ({
 
       {printer && (
         <>
-          {lastCheck && (
-            <LastCheckCard
-              printerCheck={lastCheck}
-              accessories={checkAccessories}
-            />
-          )}
+          {lastCheck && <LastCheckCard printerCheck={lastCheck} accessories={checkAccessories} />}
           <View style={styles.buttons}>
+            {/* TODO: use printerId instead? */}
             <Button
               title="Realizar conferência"
               onPress={() => navigation.navigate("CheckPrinter", { serialNumber })}
             />
-            <Button title="Histórico de conferências" />
+            <Button
+              title="Histórico de conferências"
+              onPress={() => navigation.navigate("CheckHistory", { printerId: printer.id })}
+            />
           </View>
         </>
       )}
