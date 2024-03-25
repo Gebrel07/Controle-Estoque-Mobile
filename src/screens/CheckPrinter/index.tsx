@@ -2,6 +2,7 @@ import { NavigationProp, RouteProp } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { useCheckAccessories } from "../../hooks/useCheckAccessories";
 import { usePrinterChecks } from "../../hooks/usePrinterChecks";
 
 // types
@@ -29,7 +30,8 @@ const CheckPrinter = ({
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [note, setNote] = useState<string | null>(null);
 
-  const { addPrinterCheck, addCheckAccessory, completePrinterCheck } = usePrinterChecks();
+  const { addPrinterCheck, completePrinterCheck } = usePrinterChecks();
+  const { addCheckAccessory } = useCheckAccessories();
 
   const finishPrinterCheck = (checkId: string) => {
     completePrinterCheck(checkId)
