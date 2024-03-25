@@ -2,16 +2,18 @@ import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import PrinterCheckCard from "../components/PrinterCheckCard";
 
 // hooks
+import { useCheckAccessories } from "../hooks/useCheckAccessories";
 import { usePrinterChecks } from "../hooks/usePrinterChecks";
 
 // types
-import { PrinterCheck, Printer as PrinterInterface } from "../types/firebaseModels";
+import { CheckedAccessory } from "../types/accessoryTypes";
+import { Printer, PrinterCheck } from "../types/printerTypes";
 
 // components
 import PrinterCard from "../components/PrinterCard";
+import PrinterCheckCard from "../components/PrinterCheckCard";
 
 const ViewPrinter = ({
   route,
@@ -22,18 +24,31 @@ const ViewPrinter = ({
 }) => {
   const { serialNumber } = route.params;
 
-  const [printer, setPrinter] = useState<PrinterInterface | null>(null);
+  const [printer, setPrinter] = useState<Printer | null>(null);
+
   const [error, setError] = useState<string | null>(null);
 
   const [lastCheck, setLastCheck] = useState<PrinterCheck | null>(null);
+  const [checkAccessories, setCheckAccessories] = useState<CheckedAccessory[] | null>(null);
 
   const { queryLastPrinterCheck } = usePrinterChecks();
+  const { queryCheckAccessoriesAndData } = useCheckAccessories();
 
   useEffect(() => {
     if (printer) {
       queryLastPrinterCheck(printer.id)
         .then((printerCheck) => {
           setLastCheck(printerCheck);
+
+          if (printerCheck) {
+            queryCheckAccessoriesAndData(printerCheck.id)
+              .then((accessories) => {
+                setCheckAccessories(accessories);
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
         })
         .catch((err) => console.error(err));
     }
@@ -57,7 +72,13 @@ const ViewPrinter = ({
 
       {printer && (
         <>
-          {lastCheck && <PrinterCheckCard printerCheck={lastCheck} title="Última conferência" />}
+          {lastCheck && (
+            <PrinterCheckCard
+              printerCheck={lastCheck}
+              accessories={checkAccessories}
+              title="Última conferência"
+            />
+          )}
           <View style={styles.buttons}>
             <Button
               title="Realizar conferência"

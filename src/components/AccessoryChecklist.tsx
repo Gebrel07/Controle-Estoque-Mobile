@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { CheckedAccessory } from "../types/accessoryTypes";
 
 const AccessoryChecklist = ({ checkedAccessories }: { checkedAccessories: CheckedAccessory[] }) => {
-  console.debug(JSON.stringify(checkedAccessories));
   return (
     <View>
       <Text style={styles.title}>Acessórios</Text>

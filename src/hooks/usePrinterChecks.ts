@@ -11,12 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
-import {
-  PrinterCheck,
-  PrinterCheckAccessory,
-  PrinterCheckAccessoryDto,
-  PrinterCheckDto,
-} from "../types/firebaseModels";
+import { PrinterCheck, PrinterCheckDto } from "../types/firebaseModels";
 
 export const usePrinterChecks = () => {
   const queryChecksByPrinterId = async (printerId: string): Promise<PrinterCheck[] | null> => {
@@ -74,33 +69,6 @@ export const usePrinterChecks = () => {
     return res;
   };
 
-  const queryCheckAccessoriesByCheckId = async (
-    printerCheckId: string
-  ): Promise<PrinterCheckAccessory[] | null> => {
-    const q = query(
-      collection(projFirestore, "printerCheckAccessories"),
-      where("printerCheckId", "==", printerCheckId)
-    );
-    const querySnapshot = await getDocs(q);
-
-    // return null if none found
-    if (querySnapshot.empty) {
-      return null;
-    }
-
-    const res: PrinterCheckAccessory[] = [];
-    querySnapshot.forEach((doc) => {
-      res.push({
-        id: doc.id,
-        accessoryId: doc.get("accessoryId"),
-        hasAccessory: doc.get("hasAccessory"),
-        printerCheckId: doc.get("printerCheckId"),
-      });
-    });
-
-    return res;
-  };
-
   const addPrinterCheck = async (printerId: string, note: string | null = null): Promise<string> => {
     const printerCheck: PrinterCheckDto = {
       printerId,
@@ -114,25 +82,6 @@ export const usePrinterChecks = () => {
     return docRef.id;
   };
 
-  const addCheckAccessory = async (
-    accessoryId: string,
-    hasAccessory: boolean,
-    printerCheckId: string
-  ): Promise<string> => {
-    const checkAccessory: PrinterCheckAccessoryDto = {
-      accessoryId,
-      hasAccessory,
-      printerCheckId,
-    };
-
-    // add to firebase
-    const docRef = await addDoc(
-      collection(projFirestore, "printerCheckAccessories"),
-      checkAccessory
-    );
-    return docRef.id;
-  };
-
   const completePrinterCheck = async (checkId: string) => {
     const docRef = doc(projFirestore, "printerChecks", checkId);
     // update field
@@ -141,10 +90,8 @@ export const usePrinterChecks = () => {
 
   return {
     queryChecksByPrinterId,
-    queryCheckAccessoriesByCheckId,
     queryLastPrinterCheck,
     addPrinterCheck,
-    addCheckAccessory,
     completePrinterCheck,
   };
 };

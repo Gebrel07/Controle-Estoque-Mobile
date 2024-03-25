@@ -27,6 +27,7 @@ const PrinterCheckCard = ({
   });
 
   const [expand, setExpand] = useState<boolean>(false);
+  const enableExpand = printerCheck.note || accessories ? true : false;
 
   return (
     <View style={styles.container}>
@@ -34,11 +35,13 @@ const PrinterCheckCard = ({
 
       <View style={styles.header}>
         <Text style={styles.date}>{dateString}</Text>
-        <TouchableOpacity
-          containerStyle={styles.collapseButton}
-          onPress={() => setExpand((prev) => !prev)}>
-          <Text style={styles.collapseText}>{expand ? "Recolher" : "Expandir"}</Text>
-        </TouchableOpacity>
+        {enableExpand && (
+          <TouchableOpacity
+            containerStyle={styles.collapseButton}
+            onPress={() => setExpand((prev) => !prev)}>
+            <Text style={styles.collapseText}>{expand ? "Recolher" : "Expandir"}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {expand && (
