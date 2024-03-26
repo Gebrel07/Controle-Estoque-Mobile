@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -14,6 +15,23 @@ import { projFirestore } from "../firebase/config";
 import { PrinterCheck, PrinterCheckDto } from "../types/firebaseModels";
 
 export const usePrinterChecks = () => {
+  const queryCheckById = async (checkId: string): Promise<PrinterCheck | null> => {
+    const docRef = doc(projFirestore, "printerChecks", checkId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    return {
+      id: docSnap.id,
+      printerId: docSnap.get("printerId"),
+      note: docSnap.get("note"),
+      date: docSnap.get("date"),
+      completed: docSnap.get("completed"),
+    };
+  };
+
   const queryChecksByPrinterId = async (
     printerId: string,
     completed?: boolean
@@ -98,5 +116,6 @@ export const usePrinterChecks = () => {
     queryLastPrinterCheck,
     addPrinterCheck,
     completePrinterCheck,
+    queryCheckById,
   };
 };
