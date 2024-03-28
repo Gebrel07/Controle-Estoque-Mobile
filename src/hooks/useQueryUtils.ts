@@ -18,9 +18,21 @@ export const useQueryUtils = () => {
         throw new Error(`${rightKey}:${leftItem[leftKey]} not found in rightQuery`);
       }
 
+      // BUG: keys on rightItem may overwrite keys on leftItem if they have the same name
       res.push({ ...leftItem, ...rightItem });
     }
 
+    return res;
+  };
+
+  const getPropertyList = (
+    objList: Array<{ [key: string]: any }>,
+    propertyName: string
+  ): any[] => {
+    const res: string[] = [];
+    objList.forEach((obj) => {
+      res.push(obj[propertyName]);
+    });
     return res;
   };
 
@@ -33,5 +45,5 @@ export const useQueryUtils = () => {
       minute: "2-digit",
     });
   };
-  return { leftJoinQueriesOnKey, timestampToPtBrDateString };
+  return { leftJoinQueriesOnKey, getPropertyList, timestampToPtBrDateString };
 };
