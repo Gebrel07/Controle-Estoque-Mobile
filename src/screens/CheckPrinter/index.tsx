@@ -4,7 +4,8 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 
 // types
-import { Printer as PrinterInterface } from "../../types/firebaseModels";
+import { CheckedAccessory } from "../../types/accessoryTypes";
+import { Printer } from "../../types/firebaseModels";
 
 // hooks
 import { useCheckAccessories } from "../../hooks/useCheckAccessories";
@@ -13,7 +14,6 @@ import { usePrinterInfos } from "../../hooks/usePrinterInfos";
 
 // components
 import Toast from "react-native-toast-message";
-import Divider from "../../components/Divider";
 import PrinterCard from "../../components/PrinterCard";
 import Checklist from "./Checklist";
 
@@ -26,86 +26,56 @@ const CheckPrinter = ({
 }) => {
   const { serialNumber } = route.params;
 
-  const [printer, setPrinter] = useState<PrinterInterface | null>(null);
-
   const [isPending, setIsPending] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // user input
-  const [checks, setChecks] = useState<Record<string, boolean>>({});
+  const [printer, setPrinter] = useState<Printer | null>(null);
+  const [accessories, setAccessories] = useState<CheckedAccessory[] | null>(null);
+
   const [note, setNote] = useState<string | null>(null);
 
   const { queryPrinterBySN } = usePrinterInfos();
   const { addPrinterCheck, completePrinterCheck } = usePrinterChecks();
-  const { addCheckAccessory } = useCheckAccessories();
+  const { addCheckAccessory, queryAccessoriesForCheck } = useCheckAccessories();
 
   useEffect(() => {
     queryPrinterBySN(serialNumber)
       .then((printerQuery) => {
         setPrinter(printerQuery);
+        if (printerQuery) {
+          queryAccessoriesForCheck(printerQuery.id)
+            .then((accessoriesForcheck) => {
+              setAccessories(accessoriesForcheck);
+            })
+            .catch((err) => {
+              console.error(err);
+              setError("Erro ao buscar acessórios");
+            })
+            .finally(() => {
+              setIsPending(false);
+            });
+        }
       })
       .catch((err) => {
         console.error(err);
         setError("Erro ao buscar impressora");
-      })
-      .finally(() => {
-        setIsPending(false);
       });
-  });
+  }, []);
 
-  const finishPrinterCheck = (checkId: string) => {
-    completePrinterCheck(checkId)
-      .then(() => {
-        Toast.show({
-          type: "success",
-          text1: "Conferência realizada com sucesso!",
-          position: "bottom",
-          visibilityTime: 5000,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        Toast.show({
-          type: "error",
-          text1: "Erro ao completar conferência",
-          position: "bottom",
-          visibilityTime: 5000,
-        });
-      })
-      .finally(() => navigation.goBack());
-  };
-
-  const handleError = (err: any) => {
-    console.error(err);
-    Toast.show({
-      type: "error",
-      text1: "Erro ao adicionar nova conferência",
-      position: "bottom",
-      visibilityTime: 5000,
-    });
-    navigation.goBack();
-  };
-
-  const handleSubmit = () => {
-    if (!printer) {
+  const handlePress = (accessoryId: string, hasAccessory: boolean) => {
+    if (!accessories) {
       return null;
     }
 
-    setIsPending(true);
-
-    // create new printerCheck
-    addPrinterCheck(printer.id, note)
-      .then((printerCheckId) => {
-        // create new PrinterCheckAccessory for each accessory
-        for (const accessoryId of Object.keys(checks)) {
-          addCheckAccessory(accessoryId, checks[accessoryId], printerCheckId)
-            .then()
-            .catch((err) => handleError(err));
+    setAccessories(
+      accessories.map((accessory) => {
+        if (accessory.id === accessoryId) {
+          return { ...accessory, hasAccessory: hasAccessory };
+        } else {
+          return accessory;
         }
-        // mark printerCheck as completed
-        finishPrinterCheck(printerCheckId);
       })
-      .catch((err) => handleError(err));
+    );
   };
 
   const handleTextChange = (text: string) => {
@@ -113,10 +83,85 @@ const CheckPrinter = ({
     setNote(newText.length ? newText : null);
   };
 
+  const createPrinterCheck = async (
+    printer: Printer,
+    note: string | null,
+    accessories: CheckedAccessory[] | null
+  ) => {
+    const res: { completed: boolean; error: string | null } = { completed: true, error: null };
+
+    let newPrinterCheckId;
+    try {
+      newPrinterCheckId = await addPrinterCheck(printer.id, note);
+    } catch (err) {
+      console.error(err);
+      res.completed = false;
+      res.error = "Erro ao adicionar nova conferência";
+      return res;
+    }
+
+    if (!accessories) {
+      return res;
+    }
+
+    try {
+      for (const accessory of accessories) {
+        await addCheckAccessory(accessory.id, accessory.hasAccessory, newPrinterCheckId);
+      }
+    } catch (err) {
+      console.error(err);
+      res.completed = false;
+      res.error = "Erro ao adicionar acessórios à conferência";
+      return res;
+    }
+
+    try {
+      await completePrinterCheck(newPrinterCheckId);
+    } catch (err) {
+      console.error(err);
+      res.completed = false;
+      res.error = "Erro ao finalizar conferência";
+    }
+
+    return res;
+  };
+
+  const handleSubmit = () => {
+    if (!printer) {
+      return;
+    }
+
+    setIsPending(true);
+
+    createPrinterCheck(printer, note, accessories)
+      .then((res) => {
+        if (res.completed) {
+          Toast.show({
+            type: "success",
+            text1: "Conferência realizada com sucesso!",
+            position: "bottom",
+            visibilityTime: 5000,
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: res.error ? res.error : "Houve um erro inesperado",
+            position: "bottom",
+            visibilityTime: 5000,
+          });
+        }
+        navigation.goBack();
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Erro ao iniciar criação de conferência");
+      });
+  };
+
   if (isPending) {
     return (
       <View style={styles.container}>
-        <Text>Enviando...</Text>
+        <Text>Carregando...</Text>
       </View>
     );
   }
@@ -140,18 +185,8 @@ const CheckPrinter = ({
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <PrinterCard printer={printer} />
-      <Checklist
-        printerId={printer.id}
-        onItemChecked={(id, checked) => {
-          setChecks((prev) => {
-            return { ...prev, [id]: checked };
-          });
-        }}
-      />
-
-      <Divider />
-
-      <View>
+      <Checklist accessories={accessories} onAccessoryPress={handlePress} />
+      <View style={styles.obsContainer}>
         <Text style={styles.title}>Observação</Text>
         <TextInput
           style={styles.obs}
@@ -176,6 +211,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  obsContainer: {
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
   },
   obs: {
     marginTop: 20,
