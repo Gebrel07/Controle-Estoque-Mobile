@@ -75,8 +75,13 @@ const ViewPrinter = ({
       }
     };
 
-    fetchData().then(() => setIsPending(false));
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      setIsPending(true);
+      fetchData().finally(() => setIsPending(false));
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   if (isPending) {
     return (
