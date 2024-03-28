@@ -14,7 +14,7 @@ import { usePrinterInfos } from "../../hooks/usePrinterInfos";
 // components
 import Toast from "react-native-toast-message";
 import Divider from "../../components/Divider";
-import PrinterCardV2 from "../../components/PrinterCardV2";
+import PrinterCard from "../../components/PrinterCard";
 import Checklist from "./Checklist";
 
 const CheckPrinter = ({
@@ -139,7 +139,7 @@ const CheckPrinter = ({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <PrinterCardV2 printer={printer} />
+      <PrinterCard printer={printer} />
       <Checklist
         printerId={printer.id}
         onItemChecked={(id, checked) => {

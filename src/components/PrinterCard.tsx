@@ -1,78 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
-// hooks
-import { usePrinterInfos } from "../hooks/usePrinterInfos";
-
 // types
-import { Printer as PrinterInterface } from "../types/firebaseModels";
+import { Printer } from "../types/printerTypes";
 
-const PrinterCard = ({
-  serialNumber,
-  onQueryDone,
-  onError,
-}: {
-  serialNumber: string;
-  onQueryDone?: (printer: PrinterInterface | null) => any;
-  onError?: () => any;
-}) => {
-  const [isPending, setIsPending] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [printer, setPrinter] = useState<PrinterInterface | null>(null);
+const PrinterCard = ({ printer }: { printer: Printer }) => {
+  const [error, setError] = useState<boolean>(false);
 
-  const { queryPrinterBySN } = usePrinterInfos();
-
-  useEffect(() => {
-    queryPrinterBySN(serialNumber)
-      .then((res) => {
-        setPrinter(res);
-        if (onQueryDone) {
-          onQueryDone(res);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Erro ao buscar impressora");
-        if (onError) {
-          onError();
-        }
-      })
-      .finally(() => {
-        setIsPending(false);
-      });
-  }, []);
-
-  if (isPending) {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text>{error}</Text>
-      </View>
-    );
-  }
-
-  if (printer === null) {
-    return (
-      <View style={styles.container}>
-        <Text>Impressora não encontrada</Text>
-      </View>
-    );
-  }
+  const imgFallback = require("../assets/printer.png");
 
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
         <Image
           style={styles.img}
-          source={require("../assets/printer.png")}
+          source={!error && printer.imgUrl ? printer.imgUrl : imgFallback}
           alt="Imagem impressora"
+          onError={() => setError(true)}
         />
       </View>
       <Text style={styles.model}>{printer.model}</Text>
@@ -86,6 +30,10 @@ export default PrinterCard;
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "100%"
   },
   imgContainer: {
     height: 100,

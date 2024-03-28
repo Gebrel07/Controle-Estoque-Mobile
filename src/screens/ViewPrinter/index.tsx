@@ -13,7 +13,7 @@ import { CheckedAccessory } from "../../types/accessoryTypes";
 import { Printer, PrinterCheck } from "../../types/printerTypes";
 
 // components
-import PrinterCardV2 from "../../components/PrinterCardV2";
+import PrinterCard from "../../components/PrinterCard";
 import LastCheckCard from "./LastCheckCard";
 
 const ViewPrinter = ({
@@ -104,7 +104,7 @@ const ViewPrinter = ({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <PrinterCardV2 printer={printer} />
+      <PrinterCard printer={printer} />
 
       {lastCheck && <LastCheckCard printerCheck={lastCheck} accessories={checkAccessories} />}
 
