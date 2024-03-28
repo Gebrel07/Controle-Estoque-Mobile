@@ -1,17 +1,20 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
-import { useCheckAccessories } from "../../hooks/useCheckAccessories";
-import { usePrinterChecks } from "../../hooks/usePrinterChecks";
 
 // types
 import { Printer as PrinterInterface } from "../../types/firebaseModels";
 
+// hooks
+import { useCheckAccessories } from "../../hooks/useCheckAccessories";
+import { usePrinterChecks } from "../../hooks/usePrinterChecks";
+import { usePrinterInfos } from "../../hooks/usePrinterInfos";
+
 // components
 import Toast from "react-native-toast-message";
 import Divider from "../../components/Divider";
-import PrinterCard from "../../components/PrinterCard";
+import PrinterCardV2 from "../../components/PrinterCardV2";
 import Checklist from "./Checklist";
 
 const CheckPrinter = ({
@@ -23,15 +26,32 @@ const CheckPrinter = ({
 }) => {
   const { serialNumber } = route.params;
 
-  const [isPending, setIsPending] = useState<boolean>(false);
   const [printer, setPrinter] = useState<PrinterInterface | null>(null);
+
+  const [isPending, setIsPending] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // user input
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [note, setNote] = useState<string | null>(null);
 
+  const { queryPrinterBySN } = usePrinterInfos();
   const { addPrinterCheck, completePrinterCheck } = usePrinterChecks();
   const { addCheckAccessory } = useCheckAccessories();
+
+  useEffect(() => {
+    queryPrinterBySN(serialNumber)
+      .then((printerQuery) => {
+        setPrinter(printerQuery);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Erro ao buscar impressora");
+      })
+      .finally(() => {
+        setIsPending(false);
+      });
+  });
 
   const finishPrinterCheck = (checkId: string) => {
     completePrinterCheck(checkId)
@@ -101,32 +121,46 @@ const CheckPrinter = ({
     );
   }
 
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!printer) {
+    return (
+      <View style={styles.container}>
+        <Text>Impressora não encontrada</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <PrinterCard serialNumber={serialNumber} onQueryDone={(printer) => setPrinter(printer)} />
-      {printer && (
-        <>
-          <Checklist
-            printerId={printer.id}
-            onItemChecked={(id, checked) => {
-              setChecks((prev) => {
-                return { ...prev, [id]: checked };
-              });
-            }}
-          />
-          <Divider />
-          <View>
-            <Text style={styles.title}>Observação</Text>
-            <TextInput
-              style={styles.obs}
-              multiline
-              placeholder="Insira uma observação (opcional)"
-              onChangeText={handleTextChange}
-            />
-          </View>
-          <Button title="Enviar" onPress={handleSubmit} />
-        </>
-      )}
+      <PrinterCardV2 printer={printer} />
+      <Checklist
+        printerId={printer.id}
+        onItemChecked={(id, checked) => {
+          setChecks((prev) => {
+            return { ...prev, [id]: checked };
+          });
+        }}
+      />
+
+      <Divider />
+
+      <View>
+        <Text style={styles.title}>Observação</Text>
+        <TextInput
+          style={styles.obs}
+          multiline
+          placeholder="Insira uma observação (opcional)"
+          onChangeText={handleTextChange}
+        />
+      </View>
+      <Button title="Enviar" onPress={handleSubmit} />
     </ScrollView>
   );
 };
