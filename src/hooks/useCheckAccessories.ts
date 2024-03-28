@@ -3,13 +3,14 @@ import { projFirestore } from "../firebase/config";
 import {
   Accessory,
   CheckedAccessory,
+  PrinterAccessory,
   PrinterCheckAccessory,
   PrinterCheckAccessoryDto,
 } from "../types/accessoryTypes";
 import { useQueryUtils } from "./useQueryUtils";
 
 export const useCheckAccessories = () => {
-  const { leftJoinQueriesOnKey } = useQueryUtils();
+  const { leftJoinQueriesOnKey, getPropertyList } = useQueryUtils();
 
   const queryCheckAccessoriesByCheckId = async (
     printerCheckId: string
@@ -109,9 +110,73 @@ export const useCheckAccessories = () => {
     return res;
   };
 
+  const queryPrinterAccessories = async (printerId: string): Promise<PrinterAccessory[] | null> => {
+    const q = query(
+      collection(projFirestore, "printerAccessories"),
+      where("printerId", "==", printerId)
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    const res: PrinterAccessory[] = [];
+    querySnapshot.forEach((doc) => {
+      res.push({
+        id: doc.id,
+        accessoryId: doc.get("accessoryId"),
+        printerId: doc.get("printerId"),
+      });
+    });
+
+    return res;
+  };
+
+  const queryAccessoriesForCheck = async (printerId: string): Promise<CheckedAccessory[] | null> => {
+    // get printer vs accessories junction
+    const printerAccessories = await queryPrinterAccessories(printerId);
+
+    if (printerAccessories === null) {
+      return null;
+    }
+
+    // get accessory data
+    const accessoryIds = getPropertyList(printerAccessories, "accessoryId");
+    const accessories = await queryAccessoriesById(accessoryIds);
+
+    if (accessories === null) {
+      throw new Error("accessories not found in database");
+    }
+
+    if (accessories.length !== printerAccessories.length) {
+      throw new Error(
+        "number of accessories does not match number of printerAccessories in database"
+      );
+    }
+
+    const joinedQueries = leftJoinQueriesOnKey(accessories, printerAccessories, "id", "accessoryId");
+
+    // add hasAccessory flag
+    const res: CheckedAccessory[] = [];
+    joinedQueries.forEach((accessory) => {
+      res.push({
+        id: accessory.accessoryId,
+        category: accessory.category,
+        serialNumber: accessory.serialNumber,
+        type: accessory.type,
+        hasAccessory: false,
+      });
+    });
+
+    return res;
+  };
+
   return {
     queryCheckAccessoriesByCheckId,
-    addCheckAccessory,
     queryCheckAccessoriesAndData: queryCheckAccessoriesWithdData,
+    queryPrinterAccessories,
+    queryAccessoriesForCheck,
+    addCheckAccessory,
   };
 };
