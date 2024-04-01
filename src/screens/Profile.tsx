@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { signOut } from "firebase/auth";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -16,9 +17,8 @@ const Profile = () => {
         <Text style={styles.displayName}>{currentUser.displayName}</Text>
         <Text style={{ textAlign: "center" }}>{currentUser.email}</Text>
       </View>
-      <TouchableOpacity
-        style={{ borderWidth: 1, borderColor: "gray", borderRadius: 5, padding: 10 }}
-        onPress={() => signOut(auth)}>
+      <TouchableOpacity style={styles.btn} onPress={() => signOut(auth)}>
+        <Ionicons name="exit-outline" size={20} color="gray" />
         <Text>Sair</Text>
       </TouchableOpacity>
     </View>
@@ -37,5 +37,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 15,
+  },
+  btn: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    padding: 10,
+    flexDirection: "row",
+    columnGap: 10,
   },
 });
