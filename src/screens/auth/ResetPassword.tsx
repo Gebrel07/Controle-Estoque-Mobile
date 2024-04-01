@@ -48,6 +48,7 @@ const ResetPassword = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
   return (
     <View style={styles.container}>
+      <Text>Digite seu email para receber um link de redefinição de senha</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
