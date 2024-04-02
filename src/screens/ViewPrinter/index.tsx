@@ -14,6 +14,7 @@ import { Printer, PrinterCheck } from "../../types/printerTypes";
 
 // components
 import CustomButton from "../../components/CustomButton";
+import LoadingScreen from "../../components/LoadingScreen";
 import PrinterCard from "../../components/PrinterCard";
 import LastCheckCard from "./LastCheckCard";
 
@@ -85,11 +86,7 @@ const ViewPrinter = ({
   }, [navigation]);
 
   if (isPending) {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {
