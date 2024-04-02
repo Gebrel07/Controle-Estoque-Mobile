@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import LoadingScreen from "../../components/LoadingScreen";
 import { auth } from "../../firebase/config";
 
 const Login = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -60,11 +61,7 @@ const Login = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   if (isPending) {
-    return (
-      <View>
-        <Text>Carregando...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (

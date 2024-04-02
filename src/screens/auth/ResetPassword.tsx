@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
+import LoadingScreen from "../../components/LoadingScreen";
 import { auth } from "../../firebase/config";
 
 const ResetPassword = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -39,11 +40,7 @@ const ResetPassword = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   if (isPending) {
-    return (
-      <View>
-        <Text>Carregando...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
