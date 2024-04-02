@@ -1,6 +1,6 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 
 // types
@@ -14,6 +14,7 @@ import { usePrinterInfos } from "../../hooks/usePrinterInfos";
 
 // components
 import Toast from "react-native-toast-message";
+import CustomButton from "../../components/CustomButton";
 import PrinterCard from "../../components/PrinterCard";
 import Checklist from "./Checklist";
 
@@ -195,7 +196,7 @@ const CheckPrinter = ({
           onChangeText={handleTextChange}
         />
       </View>
-      <Button title="Enviar" onPress={handleSubmit} />
+      <CustomButton title="Enviar" iconName="send-sharp" onPress={handleSubmit} />
     </ScrollView>
   );
 };
