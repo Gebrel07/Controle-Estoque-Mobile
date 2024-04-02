@@ -4,7 +4,8 @@
   },
   "include": [
     "App.js",
-    "./src/*"
+    "./src/*",
+    "./test/*"
   ],
   "extends": "expo/tsconfig.base",
 }
