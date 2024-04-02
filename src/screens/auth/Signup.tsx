@@ -57,10 +57,21 @@ const Signup = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.displayName });
-    } catch (err) {
-      // TODO: handle firebase error codes
+    } catch (err: any) {
       console.error(err);
-      setError("Erro ao criar usuário");
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          setError("Endereço de email indisponível");
+          break;
+        case "auth/invalid-email":
+          setError("Endereço de email inválido");
+          break;
+        case "auth/weak-password":
+          setError("Senha muito fraca. Inclua no mínimo 6 caracteres");
+          break;
+        default:
+          setError("Erro ao criar usuário");
+      }
     } finally {
       SetIsPending(false);
     }
