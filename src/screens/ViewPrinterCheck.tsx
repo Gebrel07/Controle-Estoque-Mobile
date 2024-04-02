@@ -11,6 +11,7 @@ import { CheckedAccessory } from "../types/accessoryTypes";
 import { PrinterCheck } from "../types/printerTypes";
 
 // components
+import LoadingScreen from "../components/LoadingScreen";
 import PrinterCheckCard from "../components/PrinterCheckCard";
 
 const ViewPrinterCheck = ({ route }: { route: RouteProp<{ params: Record<string, any> }> }) => {
@@ -48,11 +49,7 @@ const ViewPrinterCheck = ({ route }: { route: RouteProp<{ params: Record<string,
   }, []);
 
   if (isPending) {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {

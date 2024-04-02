@@ -15,6 +15,7 @@ import { usePrinterInfos } from "../../hooks/usePrinterInfos";
 // components
 import Toast from "react-native-toast-message";
 import CustomButton from "../../components/CustomButton";
+import LoadingScreen from "../../components/LoadingScreen";
 import PrinterCard from "../../components/PrinterCard";
 import Checklist from "./Checklist";
 
@@ -160,11 +161,7 @@ const CheckPrinter = ({
   };
 
   if (isPending) {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {

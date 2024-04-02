@@ -1,10 +1,11 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { usePrinterChecks } from "../hooks/usePrinterChecks";
-import { PrinterCheck } from "../types/printerTypes";
 import { ScrollView } from "react-native-gesture-handler";
+import LoadingScreen from "../components/LoadingScreen";
+import { usePrinterChecks } from "../hooks/usePrinterChecks";
 import { useQueryUtils } from "../hooks/useQueryUtils";
+import { PrinterCheck } from "../types/printerTypes";
 
 const CheckHistory = ({
   route,
@@ -35,11 +36,7 @@ const CheckHistory = ({
   }, []);
 
   if (isPending) {
-    return (
-      <View>
-        <Text>Carregando...</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {
