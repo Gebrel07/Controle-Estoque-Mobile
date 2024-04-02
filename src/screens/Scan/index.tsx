@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 // components
+import Toast from "react-native-toast-message";
 import QrScanner from "./QrScanner";
 
 const Scan = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -21,11 +22,18 @@ const Scan = ({ navigation }: { navigation: NavigationProp<any> }) => {
   );
 
   const onBarCodeScanned = (serialNumber: string) => {
-    navigation.navigate("ViewPrinter", { serialNumber });
+    navigation.navigate("PrinterStack", { screen: "ViewPrinter", params: { serialNumber } });
   };
 
   const onPermissionDenied = () => {
-    navigation.navigate("Home");
+    navigation.navigate("PrinterStack", { screen: "Home" });
+    Toast.show({
+      type: "info",
+      text1: "Permita acesso à camera",
+      text2: "O scaner precisa de acesso à sua camera.",
+      position: "bottom",
+      visibilityTime: 5000,
+    });
   };
 
   return (
