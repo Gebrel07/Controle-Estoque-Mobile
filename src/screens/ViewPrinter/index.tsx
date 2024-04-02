@@ -1,6 +1,6 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 // hooks
@@ -13,6 +13,7 @@ import { CheckedAccessory } from "../../types/accessoryTypes";
 import { Printer, PrinterCheck } from "../../types/printerTypes";
 
 // components
+import CustomButton from "../../components/CustomButton";
 import PrinterCard from "../../components/PrinterCard";
 import LastCheckCard from "./LastCheckCard";
 
@@ -114,13 +115,14 @@ const ViewPrinter = ({
       {lastCheck && <LastCheckCard printerCheck={lastCheck} accessories={checkAccessories} />}
 
       <View style={styles.buttons}>
-        {/* TODO: use printerId instead? */}
-        <Button
+        <CustomButton
           title="Realizar conferência"
+          iconName="checkbox-outline"
           onPress={() => navigation.navigate("CheckPrinter", { serialNumber })}
         />
-        <Button
+        <CustomButton
           title="Histórico de conferências"
+          iconName="list-outline"
           onPress={() => navigation.navigate("CheckHistory", { printerId: printer.id })}
         />
       </View>
