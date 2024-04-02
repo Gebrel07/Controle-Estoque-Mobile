@@ -13,7 +13,6 @@ const MainTabScreen = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        unmountOnBlur: true,
         tabBarActiveTintColor: "black",
         tabBarInactiveTintColor: "gray",
       }}>
