@@ -12,7 +12,7 @@ import {
   where,
 } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
-import { PrinterCheck, PrinterCheckDto } from "../types/firebaseModels";
+import { PrinterCheck, PrinterCheckDto } from "../types/printerTypes";
 
 export const usePrinterChecks = () => {
   const queryCheckById = async (checkId: string): Promise<PrinterCheck | null> => {

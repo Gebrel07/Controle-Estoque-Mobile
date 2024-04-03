@@ -1,6 +1,8 @@
 import { collection, documentId, getDocs, limit, query, where } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
-import { Accessory, AccessoryForCheck, Printer, PrinterAccessory } from "../types/firebaseModels";
+import { Accessory, CheckedAccessory } from "../types/accessoryTypes";
+import { PrinterAccessory } from "../types/firebaseModels";
+import { Printer } from "../types/printerTypes";
 
 export const usePrinterInfos = () => {
   const queryPrinterBySN = async (serialNumber: string): Promise<Printer | null> => {
@@ -90,8 +92,8 @@ export const usePrinterInfos = () => {
   const joinHasAccessory = (
     accessories: Accessory[],
     printerAccessories: PrinterAccessory[]
-  ): AccessoryForCheck[] => {
-    const res: AccessoryForCheck[] = [];
+  ): CheckedAccessory[] => {
+    const res: CheckedAccessory[] = [];
     accessories.forEach((accessory) => {
       // find corresponding printerAccessory by id
       const printerAccessory = printerAccessories.find((queryItem) => {
@@ -108,9 +110,7 @@ export const usePrinterInfos = () => {
     return res;
   };
 
-  const getPrinterAccessoryInfos = async (
-    printerId: string
-  ): Promise<AccessoryForCheck[] | null> => {
+  const getPrinterAccessoryInfos = async (printerId: string): Promise<CheckedAccessory[] | null> => {
     // get printer vs accessories junction
     const printerAccessories = await queryPrinterAccessories(printerId);
 

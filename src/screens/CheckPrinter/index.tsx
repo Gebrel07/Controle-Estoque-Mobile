@@ -5,7 +5,7 @@ import { ScrollView, TextInput } from "react-native-gesture-handler";
 
 // types
 import { CheckedAccessory } from "../../types/accessoryTypes";
-import { Printer } from "../../types/firebaseModels";
+import { Printer } from "../../types/printerTypes";
 
 // hooks
 import { useCheckAccessories } from "../../hooks/useCheckAccessories";
