@@ -25,6 +25,7 @@ export const usePrinterChecks = () => {
 
     return {
       id: docSnap.id,
+      userId: docSnap.get("userId"),
       printerId: docSnap.get("printerId"),
       note: docSnap.get("note"),
       date: docSnap.get("date"),
@@ -54,6 +55,7 @@ export const usePrinterChecks = () => {
     querySnapshot.forEach((doc) => {
       res.push({
         id: doc.id,
+        userId: doc.get("userId"),
         printerId: doc.get("printerId"),
         note: doc.get("note"),
         date: doc.get("date"),
@@ -82,19 +84,23 @@ export const usePrinterChecks = () => {
     // ge first document in query
     const firstDoc = querySnapshot.docs[0];
 
-    const res = {
+    return {
       id: firstDoc.id,
+      userId: firstDoc.get("userId"),
       printerId: firstDoc.get("printerId"),
       note: firstDoc.get("note"),
       date: firstDoc.get("date"),
       completed: firstDoc.get("completed"),
     };
-
-    return res;
   };
 
-  const addPrinterCheck = async (printerId: string, note: string | null = null): Promise<string> => {
+  const addPrinterCheck = async (
+    userId: string,
+    printerId: string,
+    note: string | null = null
+  ): Promise<string> => {
     const printerCheck: PrinterCheckDto = {
+      userId,
       printerId,
       note,
       date: Timestamp.fromDate(new Date()),

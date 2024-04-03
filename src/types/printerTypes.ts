@@ -9,6 +9,7 @@ export interface Printer {
 
 export interface PrinterCheck {
   id: string;
+  userId: string;
   printerId: string;
   note: string | null;
   date: Timestamp;

@@ -9,14 +9,15 @@ import { Printer } from "../../types/printerTypes";
 
 // hooks
 import { useCheckAccessories } from "../../hooks/useCheckAccessories";
-import { usePrinterChecks } from "../../hooks/usePrinterChecks";
 import { usePrinter } from "../../hooks/usePrinter";
+import { usePrinterChecks } from "../../hooks/usePrinterChecks";
 
 // components
 import Toast from "react-native-toast-message";
 import CustomButton from "../../components/CustomButton";
 import LoadingScreen from "../../components/LoadingScreen";
 import PrinterCard from "../../components/PrinterCard";
+import { auth } from "../../firebase/config";
 import Checklist from "./Checklist";
 
 const CheckPrinter = ({
@@ -86,6 +87,7 @@ const CheckPrinter = ({
   };
 
   const createPrinterCheck = async (
+    userId: string,
     printer: Printer,
     note: string | null,
     accessories: CheckedAccessory[] | null
@@ -94,7 +96,7 @@ const CheckPrinter = ({
 
     let newPrinterCheckId;
     try {
-      newPrinterCheckId = await addPrinterCheck(printer.id, note);
+      newPrinterCheckId = await addPrinterCheck(userId, printer.id, note);
     } catch (err) {
       console.error(err);
       res.completed = false;
@@ -129,13 +131,14 @@ const CheckPrinter = ({
   };
 
   const handleSubmit = () => {
-    if (!printer) {
+    // TODO: show error message if this happens
+    if (!auth.currentUser || !printer) {
       return;
     }
 
     setIsPending(true);
 
-    createPrinterCheck(printer, note, accessories)
+    createPrinterCheck(auth.currentUser.uid, printer, note, accessories)
       .then((res) => {
         if (res.completed) {
           Toast.show({
