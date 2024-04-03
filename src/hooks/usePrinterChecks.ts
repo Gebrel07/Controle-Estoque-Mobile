@@ -68,6 +68,7 @@ export const usePrinterChecks = () => {
     const q = query(
       collection(projFirestore, "printerChecks"),
       where("printerId", "==", printerId),
+      where("completed", "==", true),
       orderBy("date", "desc"),
       limit(1)
     );
