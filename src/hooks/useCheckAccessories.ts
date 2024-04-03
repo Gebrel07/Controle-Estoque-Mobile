@@ -174,7 +174,7 @@ export const useCheckAccessories = () => {
 
   return {
     queryCheckAccessoriesByCheckId,
-    queryCheckAccessoriesAndData: queryCheckAccessoriesWithdData,
+    queryCheckAccessoriesWithdData,
     queryPrinterAccessories,
     queryAccessoriesForCheck,
     addCheckAccessory,

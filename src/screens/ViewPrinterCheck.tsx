@@ -22,7 +22,7 @@ const ViewPrinterCheck = ({ route }: { route: RouteProp<{ params: Record<string,
   const [accessories, setAccessories] = useState<CheckedAccessory[] | null>(null);
 
   const { queryCheckById } = usePrinterChecks();
-  const { queryCheckAccessoriesAndData } = useCheckAccessories();
+  const { queryCheckAccessoriesWithdData } = useCheckAccessories();
 
   const { checkId } = route.params;
 
@@ -31,7 +31,7 @@ const ViewPrinterCheck = ({ route }: { route: RouteProp<{ params: Record<string,
       .then((printerCheck) => {
         setCheck(printerCheck);
         if (printerCheck) {
-          queryCheckAccessoriesAndData(checkId)
+          queryCheckAccessoriesWithdData(checkId)
             .then((checkedAccessories) => {
               setAccessories(checkedAccessories);
             })
