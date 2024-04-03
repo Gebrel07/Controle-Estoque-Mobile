@@ -18,17 +18,19 @@ export const useQueryUtils = () => {
         throw new Error(`${rightKey}:${leftItem[leftKey]} not found in rightQuery`);
       }
 
-      // BUG: keys on rightItem may overwrite keys on leftItem if they have the same name
-      res.push({ ...leftItem, ...rightItem });
+      const aux = { ...leftItem };
+      for (const [key, val] of Object.entries(rightItem)) {
+        if (!Object.keys(leftItem).includes(key)) {
+          aux[key] = val;
+        }
+      }
+      res.push(aux);
     }
 
     return res;
   };
 
-  const getPropertyList = (
-    objList: Array<{ [key: string]: any }>,
-    propertyName: string
-  ): any[] => {
+  const getPropertyList = (objList: Array<{ [key: string]: any }>, propertyName: string): any[] => {
     const res: string[] = [];
     objList.forEach((obj) => {
       res.push(obj[propertyName]);
