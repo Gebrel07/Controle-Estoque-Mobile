@@ -5,10 +5,12 @@ import { StyleSheet, Text, View } from "react-native";
 // hooks
 import { useCheckAccessories } from "../hooks/useCheckAccessories";
 import { usePrinterChecks } from "../hooks/usePrinterChecks";
+import useUser from "../hooks/useUser";
 
 // types
 import { CheckedAccessory } from "../types/accessoryTypes";
 import { PrinterCheck } from "../types/printerTypes";
+import { User } from "../types/userTypes";
 
 // components
 import LoadingScreen from "../components/LoadingScreen";
@@ -20,32 +22,39 @@ const ViewPrinterCheck = ({ route }: { route: RouteProp<{ params: Record<string,
 
   const [check, setCheck] = useState<PrinterCheck | null>(null);
   const [accessories, setAccessories] = useState<CheckedAccessory[] | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const { queryCheckById } = usePrinterChecks();
   const { queryCheckAccessoriesWithdData } = useCheckAccessories();
+  const { getUserById } = useUser();
 
   const { checkId } = route.params;
 
   useEffect(() => {
-    queryCheckById(checkId)
-      .then((printerCheck) => {
-        setCheck(printerCheck);
-        if (printerCheck) {
-          queryCheckAccessoriesWithdData(checkId)
-            .then((checkedAccessories) => {
-              setAccessories(checkedAccessories);
-            })
-            .catch((err) => {
-              console.error(err);
-              setError("Erro ao buscar acessórios da conferência");
-            })
-            .finally(() => setIsPending(false));
+    const fetchPrinterCheckData = async (checkId: string) => {
+      try {
+        const printerCheck = await queryCheckById(checkId);
+
+        if (!printerCheck) {
+          return;
         }
-      })
-      .catch((err) => {
+
+        setCheck(printerCheck);
+
+        const checkedAccessories = await queryCheckAccessoriesWithdData(checkId);
+        setAccessories(checkedAccessories);
+
+        const user = await getUserById(printerCheck.userId);
+        setUser(user);
+      } catch (err) {
         console.error(err);
-        setError("Erro ao buscar conferência");
-      });
+        setError("Erro ao buscar dados da conferência");
+      } finally {
+        setIsPending(false);
+      }
+    };
+
+    fetchPrinterCheckData(checkId);
   }, []);
 
   if (isPending) {
@@ -60,17 +69,17 @@ const ViewPrinterCheck = ({ route }: { route: RouteProp<{ params: Record<string,
     );
   }
 
-  if (!check) {
+  if (!check || !user) {
     return (
       <View style={styles.container}>
-        <Text>Conferência não encontrada. ID: {checkId}</Text>
+        <Text>Erro ao carregar dados da conferência. ID: {checkId}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <PrinterCheckCard printerCheck={check} accessories={accessories} />
+      <PrinterCheckCard printerCheck={check} accessories={accessories} user={user} />
     </View>
   );
 };

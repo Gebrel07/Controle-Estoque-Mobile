@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 // types
 import { CheckedAccessory } from "../types/accessoryTypes";
 import { PrinterCheck } from "../types/printerTypes";
+import { User } from "../types/userTypes";
 
 // hooks
 import { useQueryUtils } from "../hooks/useQueryUtils";
@@ -11,10 +12,12 @@ import { useQueryUtils } from "../hooks/useQueryUtils";
 const PrinterCheckCard = ({
   printerCheck,
   accessories,
+  user,
   title,
 }: {
   printerCheck: PrinterCheck;
   accessories: CheckedAccessory[] | null;
+  user: User;
   title?: string;
 }) => {
   const { timestampToPtBrDateString } = useQueryUtils();
@@ -43,6 +46,12 @@ const PrinterCheckCard = ({
         ) : (
           <Text>Sem acessórios cadastrados no momento da conferência</Text>
         )}
+      </View>
+
+      <View>
+        <Text style={styles.subtitle}>Quem conferiu</Text>
+        <Text>Nome: {user.displayName}</Text>
+        <Text>Id usuário: {user.userId}</Text>
       </View>
     </View>
   );
