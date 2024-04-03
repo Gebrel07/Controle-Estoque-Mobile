@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import LoadingScreen from "../../components/LoadingScreen";
 import { auth } from "../../firebase/config";
+import useUser from "../../hooks/useUser";
 
 const Signup = () => {
   interface DataInterface {
@@ -22,6 +23,8 @@ const Signup = () => {
 
   const [isPending, SetIsPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { addUser } = useUser();
 
   const validateFields = (): boolean => {
     const fields = [
@@ -57,6 +60,7 @@ const Signup = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.displayName });
+      await addUser(userCredential.user.uid, data.displayName);
     } catch (err: any) {
       console.error(err);
       switch (err.code) {
