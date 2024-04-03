@@ -1,15 +1,8 @@
 import { addDoc, collection, getDocs, limit, query, where } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
+import { User, UserDto } from "../types/userTypes";
 
 const useUser = () => {
-  interface User {
-    id: string;
-    userId: string;
-    displayName: string;
-  }
-
-  interface UserDto extends Omit<User, "id"> {}
-
   const collectionName = "users";
 
   const addUser = async (userId: string, displayName: string): Promise<string> => {
