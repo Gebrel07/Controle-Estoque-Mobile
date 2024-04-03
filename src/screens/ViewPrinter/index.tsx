@@ -6,7 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 // hooks
 import { useCheckAccessories } from "../../hooks/useCheckAccessories";
 import { usePrinterChecks } from "../../hooks/usePrinterChecks";
-import { usePrinterInfos } from "../../hooks/usePrinterInfos";
+import { usePrinter } from "../../hooks/usePrinter";
 
 // types
 import { CheckedAccessory } from "../../types/accessoryTypes";
@@ -35,7 +35,7 @@ const ViewPrinter = ({
   const [lastCheck, setLastCheck] = useState<PrinterCheck | null>(null);
   const [checkAccessories, setCheckAccessories] = useState<CheckedAccessory[] | null>(null);
 
-  const { queryPrinterBySN } = usePrinterInfos();
+  const { queryPrinterBySN } = usePrinter();
   const { queryLastPrinterCheck } = usePrinterChecks();
   const { queryCheckAccessoriesAndData } = useCheckAccessories();
 

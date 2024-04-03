@@ -2,7 +2,7 @@ import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
 import { Printer } from "../types/printerTypes";
 
-export const usePrinterInfos = () => {
+export const usePrinter = () => {
   const queryPrinterBySN = async (serialNumber: string): Promise<Printer | null> => {
     const q = query(
       collection(projFirestore, "printers"),

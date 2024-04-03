@@ -10,7 +10,7 @@ import { Printer } from "../../types/printerTypes";
 // hooks
 import { useCheckAccessories } from "../../hooks/useCheckAccessories";
 import { usePrinterChecks } from "../../hooks/usePrinterChecks";
-import { usePrinterInfos } from "../../hooks/usePrinterInfos";
+import { usePrinter } from "../../hooks/usePrinter";
 
 // components
 import Toast from "react-native-toast-message";
@@ -36,7 +36,7 @@ const CheckPrinter = ({
 
   const [note, setNote] = useState<string | null>(null);
 
-  const { queryPrinterBySN } = usePrinterInfos();
+  const { queryPrinterBySN } = usePrinter();
   const { addPrinterCheck, completePrinterCheck } = usePrinterChecks();
   const { addCheckAccessory, queryAccessoriesForCheck } = useCheckAccessories();
 
