@@ -23,9 +23,7 @@ const PrinterStackScreen = ({ navigation }: { navigation: NavigationProp<any> })
     <PrinterStack.Navigator>
       <PrinterStack.Screen name="Home" component={Home} options={{ title: "Home" }} />
       <PrinterStack.Screen
-        // @ts-ignore
         name="ViewPrinter"
-        // @ts-ignore
         component={ViewPrinter}
         options={{ title: "Informações da impressora" }}
       />

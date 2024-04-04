@@ -25,10 +25,10 @@ const ViewPrinter = ({
   route,
   navigation,
 }: {
-  route: RouteProp<{ params: Record<string, any> }>;
+  route: RouteProp<any>;
   navigation: NavigationProp<any>;
 }) => {
-  const { serialNumber } = route.params;
+  const { serialNumber }: any = route.params;
 
   const [printer, setPrinter] = useState<Printer | null>(null);
 
