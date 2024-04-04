@@ -86,81 +86,46 @@ const CheckPrinter = ({
     setNote(newText.length ? newText : null);
   };
 
-  const createPrinterCheck = async (
-    userId: string,
-    printer: Printer,
-    note: string | null,
-    accessories: CheckedAccessory[] | null
-  ) => {
-    const res: { completed: boolean; error: string | null } = { completed: true, error: null };
-
-    let newPrinterCheckId;
-    try {
-      newPrinterCheckId = await addPrinterCheck(userId, printer.id, note);
-    } catch (err) {
-      console.error(err);
-      res.completed = false;
-      res.error = "Erro ao adicionar nova conferência";
-      return res;
-    }
-
-    if (!accessories) {
-      return res;
-    }
-
-    try {
-      for (const accessory of accessories) {
-        await addCheckAccessory(accessory.id, accessory.hasAccessory, newPrinterCheckId);
-      }
-    } catch (err) {
-      console.error(err);
-      res.completed = false;
-      res.error = "Erro ao adicionar acessórios à conferência";
-      return res;
-    }
-
-    try {
-      await completePrinterCheck(newPrinterCheckId);
-    } catch (err) {
-      console.error(err);
-      res.completed = false;
-      res.error = "Erro ao finalizar conferência";
-    }
-
-    return res;
-  };
-
-  const handleSubmit = () => {
-    // TODO: show error message if this happens
-    if (!auth.currentUser || !printer) {
-      return;
-    }
-
+  const handleSubmit = async () => {
     setIsPending(true);
 
-    createPrinterCheck(auth.currentUser.uid, printer, note, accessories)
-      .then((res) => {
-        if (res.completed) {
-          Toast.show({
-            type: "success",
-            text1: "Conferência realizada com sucesso!",
-            position: "bottom",
-            visibilityTime: 5000,
-          });
-        } else {
-          Toast.show({
-            type: "error",
-            text1: res.error ? res.error : "Houve um erro inesperado",
-            position: "bottom",
-            visibilityTime: 5000,
-          });
+    try {
+      if (!printer) {
+        throw new Error("printer is currently null");
+      }
+
+      if (!auth.currentUser) {
+        throw new Error("auth.currentUser is currently null");
+      }
+
+      const newPrinterCheckId = await addPrinterCheck(auth.currentUser.uid, printer.id, note);
+
+      if (accessories) {
+        for (const accessory of accessories) {
+          await addCheckAccessory(accessory.id, accessory.hasAccessory, newPrinterCheckId);
         }
-        navigation.goBack();
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Erro ao iniciar criação de conferência");
+      }
+
+      await completePrinterCheck(newPrinterCheckId);
+
+      Toast.show({
+        type: "success",
+        text1: "Conferência realizada com sucesso!",
+        position: "bottom",
+        visibilityTime: 5000,
       });
+    } catch (err) {
+      console.error(err);
+
+      Toast.show({
+        type: "error",
+        text1: "Erro ao adicionar conferência",
+        position: "bottom",
+        visibilityTime: 5000,
+      });
+    } finally {
+      navigation.goBack();
+    }
   };
 
   if (isPending) {
@@ -182,6 +147,9 @@ const CheckPrinter = ({
       </View>
     );
   }
+
+  // TODO: adicionar conferencia de endereço atual da impressora: empresa cliente, local da impressora
+  // TODO: adicionar check para o número de série
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
