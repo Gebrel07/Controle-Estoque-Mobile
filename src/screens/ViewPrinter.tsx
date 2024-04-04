@@ -1,22 +1,23 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 // hooks
-import { useCheckAccessories } from "../../hooks/useCheckAccessories";
-import { usePrinterChecks } from "../../hooks/usePrinterChecks";
-import { usePrinter } from "../../hooks/usePrinter";
+import { useCheckAccessories } from "../hooks/useCheckAccessories";
+import { usePrinter } from "../hooks/usePrinter";
+import { usePrinterChecks } from "../hooks/usePrinterChecks";
 
 // types
-import { CheckedAccessory } from "../../types/accessoryTypes";
-import { Printer, PrinterCheck } from "../../types/printerTypes";
+import { CheckedAccessory } from "../types/accessoryTypes";
+import { Printer, PrinterCheck } from "../types/printerTypes";
 
 // components
-import CustomButton from "../../components/CustomButton";
-import LoadingScreen from "../../components/LoadingScreen";
-import PrinterCard from "../../components/PrinterCard";
-import LastCheckCard from "./LastCheckCard";
+import Card from "../components/Card";
+import CustomButton from "../components/CustomButton";
+import LoadingScreen from "../components/LoadingScreen";
+import PrinterCard from "../components/PrinterCard";
+import PrinterCheckCardBody from "../components/PrinterCheckCardBody";
 
 const ViewPrinter = ({
   route,
@@ -109,7 +110,16 @@ const ViewPrinter = ({
     <ScrollView contentContainerStyle={styles.container}>
       <PrinterCard printer={printer} />
 
-      {lastCheck && <LastCheckCard printerCheck={lastCheck} accessories={checkAccessories} />}
+      {lastCheck && (
+        <Card
+          collapsible={true}
+          initialCollapseState={false}
+          collapsibleLabel="Última conferência"
+          body={
+            <PrinterCheckCardBody printerCheck={lastCheck} checkAccessories={checkAccessories} />
+          }
+        />
+      )}
 
       <View style={styles.buttons}>
         <CustomButton
