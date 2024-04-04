@@ -7,10 +7,12 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useCheckAccessories } from "../hooks/useCheckAccessories";
 import { usePrinter } from "../hooks/usePrinter";
 import { usePrinterChecks } from "../hooks/usePrinterChecks";
+import useUser from "../hooks/useUser";
 
 // types
 import { CheckedAccessory } from "../types/accessoryTypes";
 import { Printer, PrinterCheck } from "../types/printerTypes";
+import { User } from "../types/userTypes";
 
 // components
 import Card from "../components/Card";
@@ -35,52 +37,45 @@ const ViewPrinter = ({
 
   const [lastCheck, setLastCheck] = useState<PrinterCheck | null>(null);
   const [checkAccessories, setCheckAccessories] = useState<CheckedAccessory[] | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const { queryPrinterBySN } = usePrinter();
   const { queryLastPrinterCheck } = usePrinterChecks();
   const { queryCheckAccessoriesWithdData } = useCheckAccessories();
+  const { getUserById } = useUser();
 
   useEffect(() => {
     const fetchData = async () => {
-      let printerQuery: Printer | null;
+      setIsPending(true);
       try {
-        printerQuery = await queryPrinterBySN(serialNumber);
+        const printerQuery = await queryPrinterBySN(serialNumber);
+
         if (!printerQuery) {
-          return null;
+          setError("Impressora não encontrada");
+          return;
         }
+
         setPrinter(printerQuery);
-      } catch (err) {
-        console.error(err);
-        setError("Erro ao buscar impressora");
-        return null;
-      }
 
-      let lasCheckQuery: PrinterCheck | null;
-      try {
-        lasCheckQuery = await queryLastPrinterCheck(printerQuery.id);
-        if (!lasCheckQuery) {
-          return null;
+        const lasCheckQuery = await queryLastPrinterCheck(printerQuery.id);
+
+        if (lasCheckQuery) {
+          setLastCheck(lasCheckQuery);
+          const checkAccessoriesQuery = await queryCheckAccessoriesWithdData(lasCheckQuery.id);
+          setCheckAccessories(checkAccessoriesQuery);
+          const user = await getUserById(lasCheckQuery.userId);
+          setUser(user);
         }
-        setLastCheck(lasCheckQuery);
       } catch (err) {
         console.error(err);
-        setError("Erro ao buscar última conferência");
-        return null;
-      }
-
-      let checkAccessoriesQuery: CheckedAccessory[] | null;
-      try {
-        checkAccessoriesQuery = await queryCheckAccessoriesWithdData(lasCheckQuery.id);
-        setCheckAccessories(checkAccessoriesQuery);
-      } catch (err) {
-        console.error(err);
-        setError("Erro ao buscar acessórios");
+        setError("Erro ao buscar dados da impressora");
+      } finally {
+        setIsPending(false);
       }
     };
 
     const unsubscribe = navigation.addListener("focus", () => {
-      setIsPending(true);
-      fetchData().finally(() => setIsPending(false));
+      fetchData();
     });
 
     return unsubscribe;
@@ -110,13 +105,17 @@ const ViewPrinter = ({
     <ScrollView contentContainerStyle={styles.container}>
       <PrinterCard printer={printer} />
 
-      {lastCheck && (
+      {lastCheck && user && (
         <Card
           collapsible={true}
           initialCollapseState={false}
           collapsibleLabel="Última conferência"
           body={
-            <PrinterCheckCardBody printerCheck={lastCheck} checkAccessories={checkAccessories} />
+            <PrinterCheckCardBody
+              printerCheck={lastCheck}
+              checkAccessories={checkAccessories}
+              user={user}
+            />
           }
         />
       )}

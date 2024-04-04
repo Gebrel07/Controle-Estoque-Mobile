@@ -9,13 +9,16 @@ import { useQueryUtils } from "../hooks/useQueryUtils";
 // types
 import { CheckedAccessory } from "../types/accessoryTypes";
 import { PrinterCheck } from "../types/printerTypes";
+import { User } from "../types/userTypes";
 
 const PrinterCheckCardBody = ({
   printerCheck,
   checkAccessories,
+  user,
 }: {
   printerCheck: PrinterCheck;
   checkAccessories: CheckedAccessory[] | null;
+  user: User;
 }) => {
   const { timestampToPtBrDateString } = useQueryUtils();
 
@@ -55,6 +58,12 @@ const PrinterCheckCardBody = ({
           <Text style={styles.noteText}>{printerCheck.note}</Text>
         </View>
       )}
+
+      <View>
+        <Text style={{ ...GlobalStyles.subtitle, marginBottom: 10 }}>Conferido por</Text>
+        <Text>{user.displayName}</Text>
+        <Text style={{ color: "gray", fontSize: 12 }}>{user.userId}</Text>
+      </View>
     </>
   );
 };
