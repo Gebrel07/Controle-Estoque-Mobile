@@ -18,4 +18,6 @@ export interface PrinterCheck {
   completed: boolean;
 }
 
-export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {}
+export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {
+  serialNumberOk: boolean;
+}
