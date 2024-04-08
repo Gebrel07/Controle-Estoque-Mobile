@@ -5,12 +5,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import GlobalStyles from "./styles";
 
 const Card = ({
-  body,
+  children,
   collapsible = false,
   initialCollapseState = false,
   collapsibleLabel,
 }: {
-  body: ReactElement;
+  children: ReactElement;
   collapsible?: boolean;
   initialCollapseState?: boolean;
   collapsibleLabel?: string;
@@ -26,7 +26,7 @@ const Card = ({
         </TouchableOpacity>
       )}
 
-      {expand && <>{body}</>}
+      {expand && children}
     </View>
   );
 };

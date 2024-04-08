@@ -106,18 +106,13 @@ const ViewPrinter = ({
       <PrinterCard printer={printer} />
 
       {lastCheck && user && (
-        <Card
-          collapsible={true}
-          initialCollapseState={false}
-          collapsibleLabel="Última conferência"
-          body={
-            <PrinterCheckCardBody
-              printerCheck={lastCheck}
-              checkAccessories={checkAccessories}
-              user={user}
-            />
-          }
-        />
+        <Card collapsible={true} initialCollapseState={false} collapsibleLabel="Última conferência">
+          <PrinterCheckCardBody
+            printerCheck={lastCheck}
+            checkAccessories={checkAccessories}
+            user={user}
+          />
+        </Card>
       )}
 
       <View style={styles.buttons}>
