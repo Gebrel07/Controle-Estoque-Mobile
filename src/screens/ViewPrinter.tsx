@@ -4,15 +4,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 // hooks
-import { useCheckAccessories } from "../hooks/useCheckAccessories";
 import { usePrinter } from "../hooks/usePrinter";
-import { usePrinterChecks } from "../hooks/usePrinterChecks";
-import useUser from "../hooks/useUser";
 
 // types
-import { CheckedAccessory } from "../types/accessoryTypes";
-import { Printer, PrinterCheck } from "../types/printerTypes";
-import { User } from "../types/userTypes";
+import { PrinterData } from "../types/resultTypes";
 
 // components
 import Card from "../components/Card";
@@ -30,42 +25,19 @@ const ViewPrinter = ({
 }) => {
   const { serialNumber }: any = route.params;
 
-  const [printer, setPrinter] = useState<Printer | null>(null);
-
   const [isPending, setIsPending] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [lastCheck, setLastCheck] = useState<PrinterCheck | null>(null);
-  const [checkAccessories, setCheckAccessories] = useState<CheckedAccessory[] | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [printerData, setPrinterData] = useState<PrinterData | null>(null);
 
-  const { queryPrinterBySN } = usePrinter();
-  const { queryLastPrinterCheck } = usePrinterChecks();
-  const { getCheckedAccessories } = useCheckAccessories();
-  const { getUserById } = useUser();
+  const { getPrinterDataBySerialNumber } = usePrinter();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsPending(true);
       try {
-        const printerQuery = await queryPrinterBySN(serialNumber);
-
-        if (!printerQuery) {
-          setError("Impressora não encontrada");
-          return;
-        }
-
-        setPrinter(printerQuery);
-
-        const lasCheckQuery = await queryLastPrinterCheck(printerQuery.id);
-
-        if (lasCheckQuery) {
-          setLastCheck(lasCheckQuery);
-          const checkAccessoriesQuery = await getCheckedAccessories(lasCheckQuery.id);
-          setCheckAccessories(checkAccessoriesQuery);
-          const user = await getUserById(lasCheckQuery.userId);
-          setUser(user);
-        }
+        const data = await getPrinterDataBySerialNumber(serialNumber);
+        setPrinterData(data);
       } catch (err) {
         console.error(err);
         setError("Erro ao buscar dados da impressora");
@@ -93,7 +65,7 @@ const ViewPrinter = ({
     );
   }
 
-  if (!printer) {
+  if (!printerData) {
     return (
       <View style={styles.container}>
         <Text>Impressora não encontrada</Text>
@@ -103,15 +75,11 @@ const ViewPrinter = ({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <PrinterCard printer={printer} />
+      <PrinterCard printer={printerData.printer} />
 
-      {lastCheck && user && (
+      {printerData.lastCheck && (
         <Card collapsible={true} initialCollapseState={false} collapsibleLabel="Última conferência">
-          <PrinterCheckCardBody
-            printerCheck={lastCheck}
-            checkAccessories={checkAccessories}
-            user={user}
-          />
+          <PrinterCheckCardBody checkData={printerData.lastCheck} />
         </Card>
       )}
 
@@ -124,7 +92,7 @@ const ViewPrinter = ({
         <CustomButton
           title="Histórico de conferências"
           iconName="list-outline"
-          onPress={() => navigation.navigate("CheckHistory", { printerId: printer.id })}
+          onPress={() => navigation.navigate("CheckHistory", { printerId: printerData.printer.id })}
         />
       </View>
     </ScrollView>

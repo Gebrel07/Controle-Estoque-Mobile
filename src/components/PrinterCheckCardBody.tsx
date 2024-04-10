@@ -1,4 +1,3 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import GlobalStyles from "./styles";
@@ -7,55 +6,62 @@ import GlobalStyles from "./styles";
 import { useQueryUtils } from "../hooks/useQueryUtils";
 
 // types
-import { CheckedAccessory } from "../types/accessoryTypes";
-import { PrinterCheck } from "../types/printerTypes";
-import { User } from "../types/userTypes";
+import { PrinterCheckData } from "../types/resultTypes";
 
-const PrinterCheckCardBody = ({
-  printerCheck,
-  checkAccessories,
-  user,
-}: {
-  printerCheck: PrinterCheck;
-  checkAccessories: CheckedAccessory[] | null;
-  user: User;
-}) => {
+// components
+import CheckedItem from "./CheckedItem";
+
+const PrinterCheckCardBody = ({ checkData }: { checkData: PrinterCheckData }) => {
   const { timestampToPtBrDateString } = useQueryUtils();
+
+  const check = checkData.printerCheck;
+  const address = check.address;
+  const accessories = checkData.accessories;
+  const user = checkData.user;
 
   return (
     <>
-      <Text style={{ fontWeight: "bold" }}>{timestampToPtBrDateString(printerCheck.date)}</Text>
+      <Text style={{ fontWeight: "bold" }}>{timestampToPtBrDateString(check.date)}</Text>
 
-      {checkAccessories && (
+      <View>
+        <Text style={GlobalStyles.subtitle}>Número de Série</Text>
+        <CheckedItem itemOk={check.serialNumberOk}>
+          <Text>{check.serialNumber}</Text>
+        </CheckedItem>
+      </View>
+
+      <View>
+        <Text style={GlobalStyles.subtitle}>Endereço</Text>
+        <CheckedItem itemOk={check.addressOk}>
+          <>
+            <Text>
+              {address.street}, {address.number}
+            </Text>
+            <Text>
+              {address.city}/{address.state}
+            </Text>
+            <Text>CEP: {address.zipCode}</Text>
+          </>
+        </CheckedItem>
+      </View>
+
+      {accessories && (
         <View>
           <Text style={GlobalStyles.subtitle}>Acessórios</Text>
-          {checkAccessories.map((accessory) => (
-            <View style={styles.row} key={accessory.id}>
-              <View style={styles.accessoryName}>
+          <View style={{ rowGap: 5 }}>
+            {accessories.map((accessory) => (
+              <CheckedItem itemOk={accessory.hasAccessory} key={accessory.id}>
                 <Text>{accessory.type}</Text>
-              </View>
-              <View style={{ flexDirection: "row", columnGap: 5 }}>
-                {accessory.hasAccessory ? (
-                  <>
-                    <Ionicons name="checkmark-circle-outline" size={20} color="green" />
-                    <Text>OK</Text>
-                  </>
-                ) : (
-                  <>
-                    <Ionicons name="close-circle-outline" size={20} color="red" />
-                    <Text>Falta</Text>
-                  </>
-                )}
-              </View>
-            </View>
-          ))}
+              </CheckedItem>
+            ))}
+          </View>
         </View>
       )}
 
-      {printerCheck.note && (
+      {check.note && (
         <View>
           <Text style={{ ...GlobalStyles.subtitle, marginBottom: 10 }}>Observação</Text>
-          <Text style={styles.noteText}>{printerCheck.note}</Text>
+          <Text style={styles.noteText}>{check.note}</Text>
         </View>
       )}
 
