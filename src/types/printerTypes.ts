@@ -13,6 +13,7 @@ export interface PrinterCheck {
   userId: string;
   printerId: string;
   serialNumberOk: boolean;
+  serialNumber: string;
   clientOk: boolean;
   note: string | null;
   date: Timestamp;

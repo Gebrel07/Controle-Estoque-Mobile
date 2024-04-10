@@ -110,6 +110,7 @@ const CheckPrinter = ({
       const newPrinterCheckId = await addPrinterCheck(
         auth.currentUser.uid,
         printer.id,
+        serialNumber,
         serialNumberOk,
         clientOk,
         note

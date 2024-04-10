@@ -103,6 +103,7 @@ export const usePrinterChecks = () => {
   const addPrinterCheck = async (
     userId: string,
     printerId: string,
+    serialNumber: string,
     serialNumberOk: boolean,
     clientOk: boolean,
     note: string | null = null
@@ -110,6 +111,7 @@ export const usePrinterChecks = () => {
     const printerCheck: PrinterCheckDto = {
       userId,
       printerId,
+      serialNumber,
       serialNumberOk,
       clientOk,
       note,
