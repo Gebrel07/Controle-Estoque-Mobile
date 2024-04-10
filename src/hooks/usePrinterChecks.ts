@@ -106,8 +106,8 @@ export const usePrinterChecks = () => {
     printerId: string,
     serialNumber: string,
     serialNumberOk: boolean,
-    clientOk: boolean,
     address: Address,
+    addressOk: boolean,
     note: string | null = null
   ): Promise<string> => {
     const printerCheck: PrinterCheckDto = {
@@ -115,7 +115,7 @@ export const usePrinterChecks = () => {
       printerId,
       serialNumber,
       serialNumberOk,
-      clientOk,
+      addressOk,
       address,
       note,
       date: Timestamp.fromDate(new Date()),

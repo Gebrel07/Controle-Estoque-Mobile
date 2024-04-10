@@ -42,7 +42,7 @@ const CheckPrinter = ({
   const [client, setClient] = useState<Client | null>(null);
 
   const [serialNumberOk, setSerialNumberOk] = useState<boolean>(false);
-  const [clientOk, setclientOk] = useState<boolean>(false);
+  const [addressOk, setAddressOk] = useState<boolean>(false);
   const [note, setNote] = useState<string | null>(null);
 
   const { queryPrinterBySN } = usePrinter();
@@ -116,8 +116,8 @@ const CheckPrinter = ({
         printer.id,
         serialNumber,
         serialNumberOk,
-        clientOk,
         client.address,
+        addressOk,
         note
       );
 
@@ -200,7 +200,7 @@ const CheckPrinter = ({
           <Text>Clique para indicar se o endereço está correto ou não</Text>
           <CheckItemButton
             onPress={(checked) => {
-              setclientOk(checked);
+              setAddressOk(checked);
             }}>
             <>
               <Text style={{ fontWeight: "bold" }}>{client.name}</Text>
