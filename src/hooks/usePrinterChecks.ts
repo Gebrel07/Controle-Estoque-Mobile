@@ -12,6 +12,7 @@ import {
   where,
 } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
+import { Address } from "../types/clientTypes";
 import { PrinterCheck, PrinterCheckDto } from "../types/printerTypes";
 
 export const usePrinterChecks = () => {
@@ -106,6 +107,7 @@ export const usePrinterChecks = () => {
     serialNumber: string,
     serialNumberOk: boolean,
     clientOk: boolean,
+    address: Address,
     note: string | null = null
   ): Promise<string> => {
     const printerCheck: PrinterCheckDto = {
@@ -114,6 +116,7 @@ export const usePrinterChecks = () => {
       serialNumber,
       serialNumberOk,
       clientOk,
+      address,
       note,
       date: Timestamp.fromDate(new Date()),
       completed: false,

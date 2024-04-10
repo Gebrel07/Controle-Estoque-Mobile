@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { Address } from "./clientTypes";
 
 export interface Printer {
   id: string;
@@ -15,6 +16,7 @@ export interface PrinterCheck {
   serialNumberOk: boolean;
   serialNumber: string;
   clientOk: boolean;
+  address: Address;
   note: string | null;
   date: Timestamp;
   // NOTE: default must be false. Mark as completed after all
@@ -22,5 +24,4 @@ export interface PrinterCheck {
   completed: boolean;
 }
 
-export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {
-}
+export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {}

@@ -107,12 +107,17 @@ const CheckPrinter = ({
         throw new Error("auth.currentUser is currently null");
       }
 
+      if (!client) {
+        throw new Error("client is currently null");
+      }
+
       const newPrinterCheckId = await addPrinterCheck(
         auth.currentUser.uid,
         printer.id,
         serialNumber,
         serialNumberOk,
         clientOk,
+        client.address,
         note
       );
 
