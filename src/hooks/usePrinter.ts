@@ -24,6 +24,7 @@ export const usePrinter = () => {
       imgUrl: doc.get("imgUrl"),
       model: doc.get("model"),
       serialNumber: doc.get("serialNumber"),
+      clientId: doc.get("clientId"),
     };
   };
 

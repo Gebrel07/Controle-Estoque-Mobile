@@ -5,6 +5,7 @@ export interface Printer {
   imgUrl: string | null;
   model: string;
   serialNumber: string;
+  clientId: string;
 }
 
 export interface PrinterCheck {
