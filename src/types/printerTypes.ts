@@ -12,6 +12,8 @@ export interface PrinterCheck {
   id: string;
   userId: string;
   printerId: string;
+  serialNumberOk: boolean;
+  clientOk: boolean;
   note: string | null;
   date: Timestamp;
   // NOTE: default must be false. Mark as completed after all
@@ -20,6 +22,4 @@ export interface PrinterCheck {
 }
 
 export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {
-  serialNumberOk: boolean;
-  clientOk: boolean;
 }
