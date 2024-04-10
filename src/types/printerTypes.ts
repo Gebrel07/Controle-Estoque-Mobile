@@ -21,4 +21,5 @@ export interface PrinterCheck {
 
 export interface PrinterCheckDto extends Omit<PrinterCheck, "id"> {
   serialNumberOk: boolean;
+  clientOk: boolean;
 }

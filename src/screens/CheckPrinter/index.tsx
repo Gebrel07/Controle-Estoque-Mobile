@@ -6,10 +6,12 @@ import { auth } from "../../firebase/config";
 
 // types
 import { CheckedAccessory } from "../../types/accessoryTypes";
+import { Client } from "../../types/clientTypes";
 import { Printer } from "../../types/printerTypes";
 
 // hooks
 import { useCheckAccessories } from "../../hooks/useCheckAccessories";
+import useClient from "../../hooks/useClient";
 import { usePrinter } from "../../hooks/usePrinter";
 import { usePrinterChecks } from "../../hooks/usePrinterChecks";
 
@@ -37,36 +39,39 @@ const CheckPrinter = ({
 
   const [printer, setPrinter] = useState<Printer | null>(null);
   const [accessories, setAccessories] = useState<CheckedAccessory[] | null>(null);
+  const [client, setClient] = useState<Client | null>(null);
 
   const [serialNumberOk, setSerialNumberOk] = useState<boolean>(false);
+  const [clientOk, setclientOk] = useState<boolean>(false);
   const [note, setNote] = useState<string | null>(null);
 
   const { queryPrinterBySN } = usePrinter();
   const { addPrinterCheck, completePrinterCheck } = usePrinterChecks();
   const { addCheckAccessory, queryAccessoriesForCheck } = useCheckAccessories();
+  const { queryClientById } = useClient();
 
   useEffect(() => {
-    queryPrinterBySN(serialNumber)
-      .then((printerQuery) => {
-        setPrinter(printerQuery);
-        if (printerQuery) {
-          queryAccessoriesForCheck(printerQuery.id)
-            .then((accessoriesForcheck) => {
-              setAccessories(accessoriesForcheck);
-            })
-            .catch((err) => {
-              console.error(err);
-              setError("Erro ao buscar acessórios");
-            })
-            .finally(() => {
-              setIsPending(false);
-            });
+    const fetchData = async () => {
+      try {
+        const printer = await queryPrinterBySN(serialNumber);
+        setPrinter(printer);
+
+        if (printer) {
+          const accessories = await queryAccessoriesForCheck(printer.id);
+          setAccessories(accessories);
+
+          const client = await queryClientById(printer.clientId);
+          setClient(client);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
         setError("Erro ao buscar impressora");
-      });
+      } finally {
+        setIsPending(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handlePress = (accessoryId: string, hasAccessory: boolean) => {
@@ -106,6 +111,7 @@ const CheckPrinter = ({
         auth.currentUser.uid,
         printer.id,
         serialNumberOk,
+        clientOk,
         note
       );
 
@@ -157,7 +163,13 @@ const CheckPrinter = ({
     );
   }
 
-  // TODO: adicionar conferencia de endereço atual da impressora: empresa cliente, local da impressora
+  if (!client) {
+    return (
+      <View style={styles.container}>
+        <Text>Erro ao carregar dados da impressora</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -172,6 +184,28 @@ const CheckPrinter = ({
               setSerialNumberOk(checked);
             }}>
             <Text>{printer.serialNumber}</Text>
+          </CheckItemButton>
+        </>
+      </Card>
+
+      <Card>
+        <>
+          <Text style={GlobalStyles.subtitle}>Confira o endereço do cliente</Text>
+          <Text>Clique para indicar se o endereço está correto ou não</Text>
+          <CheckItemButton
+            onPress={(checked) => {
+              setclientOk(checked);
+            }}>
+            <>
+              <Text style={{ fontWeight: "bold" }}>{client.name}</Text>
+              <Text>
+                {client.address.street}, {client.address.number}
+              </Text>
+              <Text>
+                {client.address.city}/{client.address.state}
+              </Text>
+              <Text>CEP: {client.address.zipCode}</Text>
+            </>
           </CheckItemButton>
         </>
       </Card>

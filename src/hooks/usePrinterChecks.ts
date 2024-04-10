@@ -98,12 +98,14 @@ export const usePrinterChecks = () => {
     userId: string,
     printerId: string,
     serialNumberOk: boolean,
+    clientOk: boolean,
     note: string | null = null
   ): Promise<string> => {
     const printerCheck: PrinterCheckDto = {
       userId,
       printerId,
       serialNumberOk,
+      clientOk,
       note,
       date: Timestamp.fromDate(new Date()),
       completed: false,
