@@ -88,7 +88,7 @@ export const useCheckAccessories = () => {
     return res;
   };
 
-  const queryAccessoriesForCheck = async (printerId: string): Promise<CheckedAccessory[] | null> => {
+  const getAccessoriesForCheck = async (printerId: string): Promise<CheckedAccessory[] | null> => {
     // get printer vs accessories junction
     const printerAccessories = await queryPrinterAccessories(printerId);
 
@@ -131,7 +131,7 @@ export const useCheckAccessories = () => {
     queryCheckAccessoriesByCheckId,
     getCheckedAccessories,
     queryPrinterAccessories,
-    queryAccessoriesForCheck,
+    getAccessoriesForCheck,
     addCheckAccessory,
   };
 };

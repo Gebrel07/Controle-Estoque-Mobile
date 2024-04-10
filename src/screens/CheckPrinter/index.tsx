@@ -47,7 +47,7 @@ const CheckPrinter = ({
 
   const { queryPrinterBySN } = usePrinter();
   const { addPrinterCheck, completePrinterCheck } = usePrinterChecks();
-  const { addCheckAccessory, queryAccessoriesForCheck } = useCheckAccessories();
+  const { addCheckAccessory, getAccessoriesForCheck } = useCheckAccessories();
   const { queryClientById } = useClient();
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const CheckPrinter = ({
         setPrinter(printer);
 
         if (printer) {
-          const accessories = await queryAccessoriesForCheck(printer.id);
+          const accessories = await getAccessoriesForCheck(printer.id);
           setAccessories(accessories);
 
           const client = await queryClientById(printer.clientId);
