@@ -10,7 +10,7 @@ import useUser from "./useUser";
 export const usePrinter = () => {
   const { queryClientById } = useClient();
   const { queryLastPrinterCheck } = usePrinterChecks();
-  const { queryCheckAccessoriesWithdData } = useCheckAccessories();
+  const { getCheckedAccessories } = useCheckAccessories();
   const { getUserById } = useUser();
 
   const queryPrinterBySN = async (serialNumber: string): Promise<Printer | null> => {
@@ -57,7 +57,7 @@ export const usePrinter = () => {
 
     const lastCheck = await queryLastPrinterCheck(printer.id);
     if (lastCheck) {
-      const accessories = await queryCheckAccessoriesWithdData(lastCheck.id);
+      const accessories = await getCheckedAccessories(lastCheck.id);
       const user = await getUserById(lastCheck.userId);
 
       if (!user) {

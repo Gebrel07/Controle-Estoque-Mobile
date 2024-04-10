@@ -41,7 +41,7 @@ const ViewPrinter = ({
 
   const { queryPrinterBySN } = usePrinter();
   const { queryLastPrinterCheck } = usePrinterChecks();
-  const { queryCheckAccessoriesWithdData } = useCheckAccessories();
+  const { getCheckedAccessories } = useCheckAccessories();
   const { getUserById } = useUser();
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const ViewPrinter = ({
 
         if (lasCheckQuery) {
           setLastCheck(lasCheckQuery);
-          const checkAccessoriesQuery = await queryCheckAccessoriesWithdData(lasCheckQuery.id);
+          const checkAccessoriesQuery = await getCheckedAccessories(lasCheckQuery.id);
           setCheckAccessories(checkAccessoriesQuery);
           const user = await getUserById(lasCheckQuery.userId);
           setUser(user);
