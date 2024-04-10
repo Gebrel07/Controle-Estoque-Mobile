@@ -2,16 +2,17 @@ import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { projFirestore } from "../firebase/config";
 import {
   CheckedAccessory,
-  PrinterAccessory,
   PrinterCheckAccessory,
   PrinterCheckAccessoryDto,
 } from "../types/accessoryTypes";
 import useAccessories from "./useAccessories";
+import usePrinterAccessories from "./usePrinterAccessories";
 import { useQueryUtils } from "./useQueryUtils";
 
 export const useCheckAccessories = () => {
   const { leftJoinQueriesOnKey, getPropertyList } = useQueryUtils();
   const { queryAccessoriesById } = useAccessories();
+  const { queryPrinterAccessories } = usePrinterAccessories();
 
   const queryCheckAccessoriesByCheckId = async (
     printerCheckId: string
@@ -83,29 +84,6 @@ export const useCheckAccessories = () => {
     }
 
     const res: any = leftJoinQueriesOnKey(checkAccessories, accessoriesData, "accessoryId", "id");
-
-    return res;
-  };
-
-  const queryPrinterAccessories = async (printerId: string): Promise<PrinterAccessory[] | null> => {
-    const q = query(
-      collection(projFirestore, "printerAccessories"),
-      where("printerId", "==", printerId)
-    );
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      return null;
-    }
-
-    const res: PrinterAccessory[] = [];
-    querySnapshot.forEach((doc) => {
-      res.push({
-        id: doc.id,
-        accessoryId: doc.get("accessoryId"),
-        printerId: doc.get("printerId"),
-      });
-    });
 
     return res;
   };
